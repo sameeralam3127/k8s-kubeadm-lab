@@ -4,7 +4,7 @@ from langchain_ollama import OllamaEmbeddings
 from langchain_chroma import Chroma
 from langchain_core.documents import Document
 
-FAQ_FILE = "f2442acc-5c9d-46ed-a05b-f581e7484aa2.txt"
+FAQ_FILE = "complete_internal_knowledge_base.txt"
 DB_LOCATION = "./chroma_ops_db"
 COLLECTION_NAME = "business_ops"
 
