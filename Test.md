@@ -1,9 +1,3 @@
-Great question 🙌 — you’re thinking ahead about **scaling from a prototype to production**. Right now your Streamlit app is a **proof of concept** — good for demos, but not for **7k+ concurrent employees**. Also, as you noticed, the LLM sometimes **hallucinates or makes mistakes**.
-
-Here’s how I’d approach it step by step:
-
----
-
 ## 🚀 1. Architecture for 7k Users
 
 ### Current prototype
