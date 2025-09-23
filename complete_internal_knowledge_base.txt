@@ -1,0 +1,211 @@
+GlobalTech Inc. - Internal Knowledge Base & Operations Manual
+Last Updated: October 26, 2023
+Version: 2.4
+
+1. IT & Technical Support
+1.1. Hardware Requests & Issues
+Q: How do I request a new laptop or desktop computer?
+A: All hardware requests are managed through the ServiceNow IT Portal.
+
+Navigate: Go to https://globatech.service-now.com/it (internal network/VPN only).
+
+Select: Click "Create a New Request" -> "Hardware" -> "New Computer Request".
+
+Fill Form:
+
+Employee Details: Name, Employee ID (e.g., GT12345), Department.
+
+Justification: Select "New Hire", "Replacement", or "Upgrade". For replacements, provide the asset tag of the old device (e.g., GT-LAP-98765).
+
+Configuration: Standard (Dell Latitude 5540, 16GB RAM, 512GB SSD) or Development (Dell Precision 7780, 32GB RAM, 1TB SSD). Development configs require Director-level approval.
+
+Approval: The request routes to your manager for approval. Once approved, IT procurement will process it. Standard lead time is 5-7 business days.
+Contact: For status updates, reply to the ticket confirmation email or email it-hardware@globaltech.com.
+
+Q: My laptop is slow/freezing/crashing. What should I do?
+A: Please follow these troubleshooting steps before filing a ticket:
+
+Restart: Perform a full shutdown and restart of your machine.
+
+Check Storage: Ensure your C: drive has at least 10GB of free space.
+
+Updates: Check for pending Windows Updates and install them.
+If the issue persists:
+
+File a Ticket: Create a ticket in ServiceNow under "Report an Issue" -> "Computer Performance is Slow".
+
+Provide Details: Include your device's asset tag and a brief description of the problem and the steps you already tried.
+
+Q: How do I get a replacement charger, mouse, keyboard, or monitor?
+A: For peripherals, please visit the IT Help Desk on the 3rd floor of Building A. They hold stock of common items. No ticket is required for direct swaps. If the Help Desk is out of stock, they will create a ticket for you.
+
+1.2. Software & Application Access
+Q: How do I get installed software like Photoshop, Visual Studio Code, or specialized data tools?
+A: Submit a "Software Request" in ServiceNow.
+
+Required: You must provide the business justification and your manager's approval in the ticket description.
+
+Process: IT will review for security compliance and license availability. Approved software may be pushed to your machine remotely or will be available for install via the "Company Software Center" on your desktop.
+
+Q: I'm getting an "Access Denied" error to a shared drive or internal website.
+A: Access permissions are group-based.
+
+Identify: Note the exact path of the shared drive (e.g., \\server01\finance\Q3_reports) or the URL of the website.
+
+Ticket: File a ticket under "Access Request".
+
+Manager Approval: Your manager must approve the access request via the automated email they receive. Without this, the ticket cannot be processed.
+
+Q: What is the VPN configuration for remote work?
+A: We use Cisco AnyConnect Secure Mobility Client.
+
+Server Address: vpn.globaltech.com
+
+Group: GlobalTech-Employees
+
+Username: Your network login (e.g., jsmith)
+
+Password: Your network password.
+
+2FA: You will be prompted to approve the login via the Duo Mobile app on your phone.
+
+1.3. Account & Password Issues
+Q: How do I reset my expired or forgotten password?
+A:
+
+If you know your current password: Press Ctrl+Alt+Del and select "Change a password". Follow the prompts.
+
+If you have forgotten your password: On the Windows login screen, click "Reset password". You will need to answer your security questions.
+
+If you are completely locked out: You must call the IT Help Desk directly at x-HELP (4357) from a colleague's phone. You will need to verify your identity with your employee ID and your manager's full name.
+
+Q: I'm leaving the company. What happens to my accounts?
+A: Upon notification from HR, your accounts will be disabled on your last day. All data on your company-owned devices and drives will be archived for 90 days before permanent deletion.
+
+2. Human Resources
+2.1. Benefits & Payroll
+Q: How do I change my tax withholdings (W-4)?
+A: Log in to Workday.
+
+Click on the "Pay" application.
+
+Select "Withholding Elections" -> "Federal" or "State".
+
+Make your changes and click "Submit". Changes are effective for the next full pay period.
+
+Q: I need to update my personal information (address, phone number, emergency contact).
+A: This is self-service in Workday.
+
+Click on your profile picture -> "View Profile".
+
+Click "Edit" next to "Personal Information" or "Contact Information".
+
+Changes to your home address must be accompanied by uploading a proof of residence (e.g., utility bill).
+
+Q: What is the company's 401(k) matching policy?
+A: GlobalTech offers a dollar-for-dollar match on the first 3% of your eligible compensation that you defer, and then $0.50 on the dollar for the next 2% (for a maximum match of 4% if you contribute 5%). You are eligible to enroll after 90 days of employment.
+
+2.2. Time Off & Leave
+Q: How do I request vacation or paid time off (PTO)?
+A: All time-off requests are managed in Workday.
+
+Go to the "Time" application.
+
+Click "Request Time Off".
+
+Select the type (PTO, Sick, Personal), dates, and provide a brief reason.
+
+The request is automatically sent to your manager for approval. Your team's shared calendar will be updated once approved.
+
+Q: What is the policy for parental leave?
+A: Full-time employees are eligible for up to 16 weeks of fully paid parental leave following the birth, adoption, or foster placement of a child. You must notify HR at least 30 days before the expected leave start date. Please contact hr-benefits@globaltech.com for a confidential consultation.
+
+2.3. Policies & Procedures
+Q: What is the company's Work From Home (WFH) policy?
+A: We operate on a 3/2 hybrid model.
+
+Core In-Office Days: Tuesday, Wednesday, Thursday.
+
+Flexible Days: Monday and Friday are optional WFH days, subject to team needs and manager approval.
+
+Requesting WFH: You must log your WFH days in the "FlexWork" tracker on the company intranet each week. This is for facilities and security planning.
+
+Q: What is the expense reimbursement process?
+A: Use the Concur system for all expenses.
+
+Submit: Take a photo of your receipt and create a report in the Concur mobile app or website within 30 days of the expense.
+
+Categorize: Assign the expense to a valid client code or internal project code.
+
+Approval: Your manager will approve the report. Reimbursements are processed via direct deposit every Friday and typically appear in your bank account the following Wednesday.
+
+3. Office & Facilities
+3.1. Building Access & Badges
+Q: How do I get my access badge for the main building and secure floors?
+A: For new hires, badges are prepared by Facilities upon IT setup completion. You will pick it up at the front desk on your first day. For additional access (e.g., server rooms, labs):
+
+Your manager must email facilities-access@globaltech.com with justification.
+
+Security will review and approve. Facilities will then program your badge.
+
+Q: I lost my access badge. What do I do?
+A: This is a security incident. You must:
+
+Immediately: Report it to Security at security@globaltech.com and CC your manager. They will deactivate the lost badge.
+
+Replace: Visit the Facilities office (Room 100B) to get a replacement. There is a $25 fee charged to your department.
+
+3.2. Meeting Rooms & Reservations
+Q: How do I book a meeting room?
+A: All rooms are booked through Outlook Calendar.
+
+Create a new meeting.
+
+Click "Add Room" and browse the list (e.g., "A-301-Conference", "B-202-Training").
+
+The room will be added as an attendee. Once you send the invite, the room is officially reserved. Your meeting will appear on the panel outside the room.
+
+Q: The AV equipment in the meeting room isn't working.
+A: Basic troubleshooting:
+
+Ensure the TV/display is on.
+
+Check that the correct HDMI input is selected.
+
+Try the cable from the podium.
+If it still fails, call the AV Support Hotline at x-AVHELP (284357) for immediate assistance.
+
+3.3. Supplies & Mail
+Q: Where do I get office supplies (pens, notebooks, etc.)?
+A: The supply closets are located on each floor near the kitchenettes. If an item is out of stock, submit a request to facilities-supplies@globaltech.com with the item and quantity needed.
+
+Q: How do I send a package or mail something with company postage?
+A: Bring the packaged item to the mailroom (Room 150) before 3:00 PM. You must fill out a small slip with your name, department, and cost center to be charged. Personal mail cannot be sent with company postage.
+
+4. Onboarding & Training
+Q: Where is the New Hire Onboarding checklist?
+A: The 30-60-90 day onboarding checklist is located on the company Intranet homepage. Navigate to "Resources" -> "For Employees" -> "Onboarding Portal". You will find tasks, training videos, and links to important forms.
+
+Q: How do I access mandatory compliance training?
+A: All mandatory training is assigned and tracked through the "Litmos" platform. You will receive email notifications with direct links to your assigned courses. Deadlines are strictly enforced.
+
+5. Health & Safety
+Q: What is the procedure for a fire alarm or emergency evacuation?
+A:
+
+Alarm: Immediately stop what you are doing.
+
+Exit: Proceed to the nearest emergency exit. DO NOT use elevators.
+
+Assembly: Assemble at the designated meeting point in the parking lot (see maps on the back of every door).
+
+Check-In: Your manager will take a headcount. Report any missing persons to the emergency warden (identified by a red cap).
+
+Q: I had an accident or got injured at work. What should I do?
+A:
+
+First: Seek first aid if needed. First aid kits are in every kitchenette.
+
+Report: IMMEDIATELY report the incident to your manager and safety@globaltech.com. An incident report must be filed within 24 hours.
+
+This document is the property of GlobalTech Inc. and contains confidential information.
