@@ -93,4 +93,6 @@ LLMs hallucinate if they don’t stick to the KB. Fixes:
 - Add **guardrails** to reduce hallucination (prompt tuning, RAG validation).
 
 ---
+
 Hi
+October Cyber Security Awareness months
