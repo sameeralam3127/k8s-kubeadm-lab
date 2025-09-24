@@ -1,7 +1,17 @@
 # 🏢 Business Operations Chatbot
 
-An **AI-powered chatbot** for employees to ask questions about **IT support, HR, onboarding, and office facilities** using your company’s internal FAQ knowledge base.
-Built with **LangChain**, **Ollama**, **ChromaDB**, and **Streamlit**.
+An internal AI assistant for employees. It answers questions about **IT support, HR policies, onboarding, and office facilities** using your company’s knowledge base.
+Built with **Streamlit**, **LangChain**, **Ollama**, and **Chroma**.
+
+---
+
+## 🚀 Features
+
+- Conversational **chat UI** powered by Streamlit
+- Uses **Ollama LLM** for natural responses
+- Knowledge-grounded with **Chroma vector database**
+- Avoids hallucinations → if info is missing, suggests next steps
+- Supports **rebuildable knowledge base** from FAQ text file
 
 ---
 
@@ -9,100 +19,130 @@ Built with **LangChain**, **Ollama**, **ChromaDB**, and **Streamlit**.
 
 ```
 .
-├── run.py                 # Entry point (builds DB + runs app)
-├── build_db.py            # (Optional) standalone script to rebuild DB
-├── vector.py              # Loads the Chroma retriever
-├── app.py                 # Streamlit chatbot UI
-├── f2442acc-5c9d-46ed...  # Internal FAQ text file
-└── README.md              # Documentation
+├── app.py          # Streamlit chatbot UI
+├── build.py        # Build vector DB from FAQ file
+├── run.py          # Auto-build DB (if missing) & launch app
+├── vector.py       # Retriever & vector store config
+├── complete_internal_knowledge_base.txt  # FAQ file
+├── chroma_ops_db/  # Persisted Chroma database
 ```
 
 ---
 
-## 🚀 Features
+## ⚙️ Prerequisites
 
-- Uses **`llama3.1:8b`** for answering questions.
-- Uses **`mxbai-embed-large`** for embeddings.
-- Stores FAQ knowledge base in **Chroma vector DB**.
-- Runs a **Streamlit app** for chatting.
-- Auto-builds database if not already created.
+1. **Install Ollama** → [https://ollama.ai](https://ollama.ai)
+   Make sure you have the models installed:
 
----
+   ```bash
+   ollama pull llama3.1:8b
+   ollama pull mxbai-embed-large
+   ```
 
-## 🛠️ Installation
+2. **Python 3.10+**
+   Recommended: use a virtual environment.
 
-### 1. Clone the repo
+3. **Install dependencies**
 
-```bash
-git clone https://github.com/your-org/business-ops-chatbot.git
-cd business-ops-chatbot
-```
+   ```bash
+   pip install -r requirements.txt
+   ```
 
-### 2. Install dependencies
+### Example `requirements.txt`
 
-Make sure you have **Python 3.10+**. Then:
-
-```bash
-pip install -r requirements.txt
-```
-
-Example `requirements.txt`:
-
-```
+```txt
 streamlit
 langchain
 langchain-ollama
 langchain-chroma
-pandas
-```
-
-### 3. Install & run Ollama
-
-Follow [Ollama installation](https://ollama.ai) for your system.
-Pull the required models:
-
-```bash
-ollama pull llama3.1:8b
-ollama pull mxbai-embed-large
 ```
 
 ---
 
-## ▶️ Usage
+## 🛠️ Setup
 
-Run everything in one command:
+### 1. Prepare Knowledge Base
+
+Edit `complete_internal_knowledge_base.txt` with your company FAQs in **Q/A format**:
+
+```
+Q: How do I request a new laptop?
+A: Requests are handled through the IT Portal...
+
+Q: How do I book a meeting room?
+A: Rooms are booked via Outlook or Google Calendar...
+```
+
+### 2. Build the Vector Database
+
+Manually:
+
+```bash
+python build.py --file complete_internal_knowledge_base.txt --rebuild
+```
+
+Or automatically (with app launch):
 
 ```bash
 python run.py
 ```
 
-This will:
-
-1. Build the Chroma vector DB from your FAQ file (if it doesn’t already exist).
-2. Launch the chatbot UI in Streamlit.
-
-Open [http://localhost:8501](http://localhost:8501) in your browser.
+> If the DB doesn’t exist, it will be built automatically.
 
 ---
 
-## 💡 Example Questions
+## 💬 Run the Chatbot
 
-- _How do I reset my password?_
-- _What is the work from home policy?_
-- _How do I request a new laptop?_
-- _Where can I find the onboarding checklist?_
-
----
-
-## 🔄 Rebuilding the Database
-
-If your FAQ file changes, you can force rebuild with:
+Start the app:
 
 ```bash
-rm -rf chroma_ops_db
+streamlit run app.py
+```
+
+Or use the shortcut:
+
+```bash
 python run.py
 ```
 
-(or extend `run.py` to support a `--rebuild` flag).
+Then open [http://localhost:8501](http://localhost:8501) in your browser.
 
 ---
+
+## ⚡ Configuration
+
+Set environment variables to customize behavior:
+
+| Variable          | Default                                | Description                            |
+| ----------------- | -------------------------------------- | -------------------------------------- |
+| `FAQ_FILE`        | `complete_internal_knowledge_base.txt` | Path to FAQ file                       |
+| `DB_LOCATION`     | `./chroma_ops_db`                      | Directory for Chroma DB                |
+| `COLLECTION_NAME` | `business_ops`                         | Chroma collection name                 |
+| `OLLAMA_MODEL`    | `llama3.1:8b`                          | LLM model used for answering           |
+| `EMBED_MODEL`     | `mxbai-embed-large`                    | Embedding model for Chroma             |
+| `RETRIEVER_K`     | `5`                                    | Number of docs to retrieve             |
+| `RETRIEVER_MODE`  | `similarity`                           | Retrieval type (`similarity` or `mmr`) |
+| `REBUILD_DB`      | `false`                                | Set to `true` to rebuild DB at startup |
+
+Example:
+
+```bash
+export RETRIEVER_K=3
+export REBUILD_DB=true
+python run.py
+```
+
+---
+
+## 🔮 Future Enhancements
+
+- Support **multiple FAQ files** or knowledge sources
+- Add **user authentication** for internal-only access
+- Show **source references** with each answer
+- Deploy on an internal server with **Docker**
+
+---
+
+## 👩‍💻 Author
+
+Built for internal company use with ❤️ using **Streamlit + LangChain + Ollama + Chroma**.
