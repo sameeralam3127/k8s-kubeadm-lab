@@ -33,8 +33,12 @@ model = OllamaLLM(model=model_name)
 # Prompt template
 template = """
 You are a helpful assistant for company employees.
-Answer questions about IT, HR, onboarding, and office policies
-based only on the provided knowledge base.
+Use ONLY the provided knowledge base documents to answer questions.
+- If the question is in the knowledge base, answer directly and clearly.
+- If the information is missing, do NOT make up answers. Instead:
+   1. Politely say it is not in the knowledge base.
+   2. Suggest where the employee can go for more help (e.g., IT Help Desk, HR, or Facilities).
+   3. Encourage them to check the company intranet or contact the relevant team.
 
 Conversation so far:
 {history}
@@ -45,6 +49,8 @@ Relevant documents:
 Latest question:
 {question}
 """
+
+
 prompt = ChatPromptTemplate.from_template(template)
 chain = prompt | model
 
