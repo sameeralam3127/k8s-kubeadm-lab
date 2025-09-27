@@ -61,7 +61,7 @@ if prompt := st.chat_input("Ask about IT, HR, facilities, or onboarding..."):
     
     # Show debug info if enabled
     if st.session_state.get("show_debug", False):
-        with st.expander("📊 Retrieval Details"):
+        with st.expander("Retrieval Details"):
             st.write(f"⏱️ Retrieval time: {retrieval_time:.2f}s")
             st.write(f"📄 Documents found: {len(documents)}")
             for i, doc in enumerate(documents):
