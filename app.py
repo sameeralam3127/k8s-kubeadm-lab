@@ -1,108 +1,102 @@
 import streamlit as st
-from langchain_ollama.llms import OllamaLLM
-from langchain_core.prompts import ChatPromptTemplate
-from vector import retriever
-import os
+from core.retriever import enhanced_retriever
+from core.llm import chatbot
+from config.settings import settings
+import time
 
 # -----------------------
-# Setup
+# Setup with Caching
 # -----------------------
 st.set_page_config(page_title="Business Ops Chatbot", layout="wide")
 
-st.title("Business Operations Assistant")
+@st.cache_resource
+def initialize_components():
+    """Cache expensive initializations"""
+    return {
+        "retriever": enhanced_retriever,
+        "chatbot": chatbot
+    }
+
+# Initialize with caching
+components = initialize_components()
+
+st.title("🚀 Business Operations Assistant")
 st.caption("Ask me anything about IT support, HR policies, onboarding, or office facilities.")
 
-# Sidebar controls
+# Sidebar with enhanced controls
 with st.sidebar:
     st.header("⚙️ Settings")
-    if st.button("Clear Chat"):
-        st.session_state["messages"] = []
+    
+    if st.button("🔄 Clear Chat History"):
+        st.session_state.messages = []
         st.rerun()
-    st.markdown("Adjust retriever and model settings in environment variables.")
+    
+    st.subheader("Performance Options")
+    retrieval_limit = st.slider("Documents to retrieve", 3, 10, 6)
+    show_retrieval_info = st.checkbox("Show retrieval info", False)
 
-# Initialize session state for chat history
+# Initialize session state
 if "messages" not in st.session_state:
-    st.session_state["messages"] = [
-        {"role": "assistant", "content": "Hello 👋 How can I help you today?"}
+    st.session_state.messages = [
+        {"role": "assistant", "content": "Hello 👋 How can I help you with business operations today?"}
     ]
 
-# Load model
-model_name = os.getenv("OLLAMA_MODEL", "llama3.1:8b")
-model = OllamaLLM(model=model_name)
-
-# Prompt template
-template = """
-You are a helpful assistant for company employees.
-Use ONLY the provided knowledge base documents to answer questions.
-- If the question is in the knowledge base, answer directly and clearly.
-- If the information is missing, do NOT make up answers. Instead:
-   1. Politely say it is not in the knowledge base.
-   2. Suggest where the employee can go for more help (e.g., IT Help Desk, HR, or Facilities).
-   3. Encourage them to check the company intranet or contact the relevant team.
-
-Conversation so far:
-{history}
-
-Relevant documents:
-{docs}
-
-Latest question:
-{question}
-"""
-
-
-prompt = ChatPromptTemplate.from_template(template)
-chain = prompt | model
-
-# -----------------------
-# Chat display (re-render history)
-# -----------------------
-for msg in st.session_state["messages"]:
+# Display chat history
+for msg in st.session_state.messages:
     with st.chat_message(msg["role"]):
         st.markdown(msg["content"])
 
-# -----------------------
 # User input
-# -----------------------
 if question := st.chat_input("Type your question here..."):
-    st.session_state["messages"].append({"role": "user", "content": question})
-
+    # Add user message
+    st.session_state.messages.append({"role": "user", "content": question})
+    
     with st.chat_message("user"):
         st.markdown(question)
-
-    # Retrieve relevant docs
-    try:
-        docs = retriever.invoke(question)
-    except Exception as e:
-        st.error(f"⚠️ Retrieval error: {e}")
-        docs = []
-
-    if not docs:
-        docs_text = "No relevant documents found."
-    else:
-        docs_text = "\n".join(
-            [d.page_content.strip()[:500] for d in docs]
-        )
-
-    # Limit history to last 5 messages for context
-    history_text = "\n".join(
-        f"{m['role'].capitalize()}: {m['content']}"
-        for m in st.session_state["messages"][-5:]
-    )
-
-    # Stream AI response
+    
+    # Retrieval with timing
+    with st.spinner("🔍 Searching knowledge base..."):
+        start_time = time.time()
+        docs = enhanced_retriever.get_relevant_documents(question)[:retrieval_limit]
+        retrieval_time = time.time() - start_time
+    
+    # Display retrieval info if enabled
+    if show_retrieval_info:
+        with st.expander("📊 Retrieval Information"):
+            st.write(f"⏱️ Retrieval time: {retrieval_time:.2f}s")
+            st.write(f"📄 Documents found: {len(docs)}")
+            for i, doc in enumerate(docs):
+                st.write(f"**Doc {i+1}:** {doc.page_content[:200]}...")
+    
+    # Generate response with streaming
     with st.chat_message("assistant"):
         placeholder = st.empty()
         response = ""
+        
         try:
-            for chunk in chain.stream(
-                {"docs": docs_text, "question": question, "history": history_text}
-            ):
+            # Stream response
+            start_time = time.time()
+            for chunk in chatbot.chain.stream({
+                "question": question,
+                "docs": "\n\n".join([doc.page_content for doc in docs]),
+                "history": "\n".join([
+                    f"{m['role']}: {m['content']}" 
+                    for m in st.session_state.messages[-4:]
+                ])
+            }):
                 response += chunk
                 placeholder.markdown(response + "▌")
+            
+            generation_time = time.time() - start_time
             placeholder.markdown(response)
+            
+            if show_retrieval_info:
+                st.caption(f"⏱️ Generation time: {generation_time:.2f}s")
+                
         except Exception as e:
-            response = f"⚠️ Error generating response: {e}"
-            placeholder.error(response)
-
-    st.session_state["messages"].append({"role": "assistant", "content": response})
+            error_msg = f"⚠️ Error generating response: {str(e)}"
+            placeholder.error(error_msg)
+            response = error_msg
+    
+    # Add to history
+    st.session_state.messages.append({"role": "assistant", "content": response})
