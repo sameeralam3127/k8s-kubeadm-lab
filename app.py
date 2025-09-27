@@ -7,9 +7,9 @@ import os
 # -----------------------
 # Setup
 # -----------------------
-st.set_page_config(page_title="Business Ops Chatbot", page_icon="🏢", layout="wide")
+st.set_page_config(page_title="Business Ops Chatbot", layout="wide")
 
-st.title("🏢 Business Operations Assistant")
+st.title("Business Operations Assistant")
 st.caption("Ask me anything about IT support, HR policies, onboarding, or office facilities.")
 
 # Sidebar controls
