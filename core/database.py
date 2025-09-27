@@ -1,8 +1,8 @@
-# core/database.py - FIXED VERSION
+# core/database.py - FIXED
 import os
 from langchain_ollama import OllamaEmbeddings
 from langchain_chroma import Chroma
-from langchain_core.documents import Document
+from langchain_core.documents import Document  # ADD THIS IMPORT
 from config.settings import settings
 
 class VectorDatabase:
@@ -15,47 +15,27 @@ class VectorDatabase:
         self._initialize_db()
     
     def _initialize_db(self):
-        """Initialize ChromaDB vector store - FIXED"""
+        """Initialize ChromaDB vector store"""
         # Always create the directory if it doesn't exist
         os.makedirs(settings.db_location, exist_ok=True)
         
-        # Initialize Chroma - this will create or connect to existing
+        # Initialize Chroma
         self.vector_store = Chroma(
             collection_name=settings.collection_name,
             persist_directory=settings.db_location,
             embedding_function=self.embeddings,
         )
-        print(f"✅ Vector store initialized at {settings.db_location}")
     
     def add_documents(self, documents):
-        """Add documents to vector store - FIXED"""
+        """Add documents to vector store"""
         if not documents:
             print("⚠️ No documents to add")
             return 0
         
-        print(f"📝 Adding {len(documents)} documents to vector store...")
-        
         try:
-            # Use from_documents to properly create the collection
-            if self.get_document_count() == 0:
-                # First time - create collection with documents
-                self.vector_store = Chroma.from_documents(
-                    documents=documents,
-                    embedding=self.embeddings,
-                    persist_directory=settings.db_location,
-                    collection_name=settings.collection_name
-                )
-            else:
-                # Add to existing collection
-                self.vector_store.add_documents(documents)
-            
-            # Persist changes
-            self.vector_store.persist()
-            
-            new_count = self.get_document_count()
-            print(f"✅ Successfully added documents. Total now: {new_count}")
+            # Add documents to existing collection
+            self.vector_store.add_documents(documents)
             return len(documents)
-            
         except Exception as e:
             print(f"❌ Error adding documents: {e}")
             return 0
@@ -73,18 +53,6 @@ class VectorDatabase:
             search_type=settings.retriever_mode,
             search_kwargs={"k": settings.retriever_k}
         )
-    
-    def test_search(self, query: str = "laptop", k: int = 2):
-        """Test search functionality"""
-        try:
-            results = self.vector_store.similarity_search(query, k=k)
-            print(f"🔍 Test search for '{query}': Found {len(results)} documents")
-            for i, doc in enumerate(results):
-                print(f"   {i+1}. {doc.page_content[:100]}...")
-            return results
-        except Exception as e:
-            print(f"❌ Search test failed: {e}")
-            return []
 
 # Global instance
 vector_db = VectorDatabase()

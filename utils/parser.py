@@ -1,5 +1,6 @@
+# utils/parser.py - FIXED
 import re
-from typing import List
+from typing import List  # ADD THIS IMPORT
 from langchain_core.documents import Document
 
 class FAQParser:
@@ -9,42 +10,27 @@ class FAQParser:
             content = f.read()
         
         documents = []
-        sections = content.split('\n\n')
         
-        for section in sections:
-            lines = section.strip().split('\n')
-            if len(lines) < 2:
+        # Split by Q: patterns
+        qa_blocks = re.split(r'\n(?=Q:)', content)
+        
+        for block in qa_blocks:
+            if not block.strip():
                 continue
                 
-            # Look for Q: and A: patterns
-            question = None
-            answer_lines = []
+            # Extract Q and A
+            q_match = re.search(r'Q:\s*(.*?)(?=\nA:|\n\n|$)', block, re.DOTALL)
+            a_match = re.search(r'A:\s*(.*?)(?=\nQ:|\n\n|$)', block, re.DOTALL)
             
-            for line in lines:
-                line = line.strip()
-                if line.startswith('Q:'):
-                    if question and answer_lines:
-                        # Save previous Q/A
-                        answer = ' '.join(answer_lines)
-                        documents.append(Document(
-                            page_content=f"Q: {question}\nA: {answer}",
-                            metadata={"source": "faq"}
-                        ))
-                    
-                    question = line[2:].strip()
-                    answer_lines = []
-                    
-                elif line.startswith('A:') and question:
-                    answer_lines.append(line[2:].strip())
-                elif answer_lines and line and not line.startswith('Q:'):
-                    answer_lines.append(line)
-            
-            # Don't forget the last Q/A pair
-            if question and answer_lines:
-                answer = ' '.join(answer_lines)
-                documents.append(Document(
-                    page_content=f"Q: {question}\nA: {answer}",
-                    metadata={"source": "faq"}
-                ))
+            if q_match and a_match:
+                question = q_match.group(1).strip()
+                answer = a_match.group(1).strip()
+                
+                if question and answer:
+                    text = f"Q: {question}\nA: {answer}"
+                    documents.append(Document(
+                        page_content=text,
+                        metadata={"source": "faq"}
+                    ))
         
         return documents

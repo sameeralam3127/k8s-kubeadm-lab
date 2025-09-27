@@ -1,7 +1,9 @@
+# core/llm.py - FIXED IMPORTS
 from langchain_ollama.llms import OllamaLLM
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 from config.settings import settings
+from typing import List  # ADD THIS IMPORT
 
 class BusinessChatbot:
     def __init__(self):

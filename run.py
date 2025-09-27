@@ -1,11 +1,11 @@
-# run.py - UPDATED
+# run.py - FIXED
 import os
 import subprocess
 import shutil
 from config.settings import settings
 
 def build_database(force_rebuild: bool = False):
-    """Build or rebuild the vector database - FIXED"""
+    """Build or rebuild the vector database"""
     
     # Check if we need to rebuild
     needs_rebuild = force_rebuild or not os.path.exists(settings.db_location)

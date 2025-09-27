@@ -1,4 +1,4 @@
-# build_database.py
+# build_database.py - FIXED
 import os
 import shutil
 from utils.parser import FAQParser
