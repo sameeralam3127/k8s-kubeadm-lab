@@ -1,39 +1,43 @@
+# run.py - UPDATED
 import os
 import subprocess
 import shutil
 from config.settings import settings
-from utils.parser import FAQParser
-from core.database import vector_db
 
 def build_database(force_rebuild: bool = False):
-    """Build or rebuild the vector database"""
-    if force_rebuild and os.path.exists(settings.db_location):
-        print("♻️ Removing existing database...")
-        shutil.rmtree(settings.db_location)
+    """Build or rebuild the vector database - FIXED"""
     
-    # Check if database needs to be built
-    if not os.path.exists(settings.db_location) or not os.listdir(settings.db_location):
-        print("📊 Building vector database...")
+    # Check if we need to rebuild
+    needs_rebuild = force_rebuild or not os.path.exists(settings.db_location)
+    
+    if not needs_rebuild:
+        # Check if database has content
+        try:
+            from core.database import vector_db
+            count = vector_db.get_document_count()
+            if count > 0:
+                print(f"✅ Database exists with {count} documents")
+                return True
+            else:
+                print("⚠️ Database exists but is empty, rebuilding...")
+                needs_rebuild = True
+        except:
+            needs_rebuild = True
+    
+    if needs_rebuild:
+        print("🏗️ Building database...")
         
-        if not os.path.exists(settings.faq_file):
-            raise FileNotFoundError(f"FAQ file not found: {settings.faq_file}")
+        # Use the standalone builder
+        from build_database import build_database_standalone
+        count = build_database_standalone()
         
-        # Parse documents
-        documents = FAQParser.parse_faq_file(settings.faq_file)
-        
-        if not documents:
-            raise ValueError("No documents found in FAQ file")
-        
-        # Add to database
-        count = vector_db.add_documents(documents)
-        print(f"✅ Added {count} documents to database")
-        
-        # Verify
-        doc_count = vector_db.get_document_count()
-        print(f"📁 Database now contains {doc_count} documents")
-    else:
-        doc_count = vector_db.get_document_count()
-        print(f"✅ Database exists with {doc_count} documents")
+        if count > 0:
+            print(f"🎉 Database built successfully with {count} documents")
+            return True
+        else:
+            raise ValueError("Failed to build database")
+    
+    return True
 
 def main():
     """Main application entry point"""
@@ -46,15 +50,14 @@ def main():
     args = parser.parse_args()
     
     # Build database if needed
-    build_database(force_rebuild=args.rebuild)
-    
-    # Launch Streamlit app
-    print("🚀 Starting Business Operations Chatbot...")
-    subprocess.run([
-        "streamlit", "run", "app.py",
-        "--server.port", str(args.port),
-        "--server.headless", "true"
-    ], check=True)
+    if build_database(force_rebuild=args.rebuild):
+        # Launch Streamlit app
+        print("🚀 Starting Business Operations Chatbot...")
+        subprocess.run([
+            "streamlit", "run", "app.py",
+            "--server.port", str(args.port),
+            "--server.headless", "true"
+        ], check=True)
 
 if __name__ == "__main__":
     main()

@@ -1,13 +1,19 @@
+# core/retriever.py - FIXED
 from langchain_core.retrievers import BaseRetriever
 from langchain_core.documents import Document
-from typing import List
+from typing import List, ClassVar
 from core.database import vector_db
 from utils.helpers import query_analyzer
 
 class EnhancedRetriever(BaseRetriever):
+    # Class variable instead of instance attribute
+    _retriever = None
+    
     def __init__(self):
         super().__init__()
-        self.retriever = vector_db.get_retriever()
+        # Initialize the retriever once
+        if EnhancedRetriever._retriever is None:
+            EnhancedRetriever._retriever = vector_db.get_retriever()
     
     def _get_relevant_documents(self, query: str, **kwargs) -> List[Document]:
         """Retrieve relevant documents with query expansion"""
@@ -18,7 +24,7 @@ class EnhancedRetriever(BaseRetriever):
             
             all_docs = []
             for exp_query in expanded_queries:
-                docs = self.retriever.invoke(exp_query)
+                docs = self._retriever.invoke(exp_query)
                 all_docs.extend(docs)
             
             # Remove duplicates and return
