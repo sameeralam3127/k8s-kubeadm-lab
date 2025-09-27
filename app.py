@@ -7,11 +7,10 @@ import time
 # Page configuration
 st.set_page_config(
     page_title="Business Ops Chatbot",
-    page_icon="💼",
     layout="wide"
 )
 
-st.title("💼 Business Operations Assistant")
+st.title("Business Operations Assistant")
 st.caption("Ask me about IT support, HR policies, onboarding, or office facilities")
 
 # Sidebar
