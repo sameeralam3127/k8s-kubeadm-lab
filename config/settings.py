@@ -1,5 +1,4 @@
 import os
-from typing import Optional
 from pydantic_settings import BaseSettings
 
 class Settings(BaseSettings):
@@ -15,18 +14,16 @@ class Settings(BaseSettings):
     collection_name: str = "business_ops"
     
     # Retrieval Settings
-    retriever_k: int = 8  # Increased for better recall
-    retriever_mode: str = "mmr"  # Max Marginal Relevance for diversity
-    mmr_diversity: float = 0.7  # Balance relevance/diversity
+    retriever_k: int = 8
+    retriever_mode: str = "similarity"
     
     # FAQ Source
     faq_file: str = "docs/complete_internal_knowledge_base.txt"
     
-    # Performance
-    max_history_tokens: int = 1000
-    chunk_size: int = 1000
-    chunk_overlap: int = 200
-    
+    # App Settings
+    max_history_messages: int = 6
+    enable_debug: bool = False
+
     class Config:
         env_file = ".env"
 
