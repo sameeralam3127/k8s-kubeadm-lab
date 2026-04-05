@@ -16,7 +16,7 @@ class Settings(BaseSettings):
         extra="ignore",
     )
 
-    app_name: str = "Offline Ollama RAG"
+    app_name: str = "Ollama RAG Studio"
     app_env: str = "development"
     api_prefix: str = "/api/v1"
     admin_token: str = "change-me"
@@ -34,13 +34,13 @@ class Settings(BaseSettings):
 
     chroma_path: str = str(BASE_DIR / "data" / "chroma")
     documents_path: str = str(BASE_DIR / "data" / "documents")
-    chroma_collection: str = "offline_rag_documents"
+    chroma_collection: str = "ollama_rag_studio_documents"
     chunk_size: int = 1200
     chunk_overlap: int = 200
     retrieval_k: int = 4
     cache_ttl_seconds: int = 900
 
-    postgres_url: str = "postgresql+psycopg://rag:rag@localhost:5432/rag"
+    postgres_url: str = "postgresql+psycopg://ollama_rag_studio:ollama_rag_studio@localhost:5432/ollama_rag_studio"
     redis_url: str = "redis://localhost:6379/0"
 
     request_timeout_seconds: int = 180

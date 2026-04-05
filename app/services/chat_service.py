@@ -153,7 +153,7 @@ class ChatService:
             {
                 "role": "system",
                 "content": (
-                    "You are an assistant for an offline-first RAG system. "
+                    "You are an assistant for Ollama RAG Studio, an offline-first RAG system. "
                     "Answer using the provided document context first. "
                     "If the context is insufficient, say what is missing clearly."
                 ),
@@ -180,7 +180,7 @@ class ChatService:
             sort_keys=True,
         )
         digest = hashlib.sha256(raw.encode("utf-8")).hexdigest()
-        return f"rag:chat:{digest}"
+        return f"ollama-rag-studio:chat:{digest}"
 
     def _cache_get(self, cache_key: str) -> str | None:
         try:

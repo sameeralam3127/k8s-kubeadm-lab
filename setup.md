@@ -35,7 +35,7 @@ ADMIN_TOKEN=super-secret-admin-token
 OLLAMA_BASE_URL=http://host.docker.internal:11434
 DEFAULT_CHAT_MODEL=llama3.1:8b
 DEFAULT_EMBEDDING_MODEL=nomic-embed-text
-POSTGRES_URL=postgresql+psycopg://rag:rag@postgres:5432/rag
+POSTGRES_URL=postgresql+psycopg://ollama_rag_studio:ollama_rag_studio@postgres:5432/ollama_rag_studio
 REDIS_URL=redis://redis:6379/0
 CHROMA_PATH=/app/data/chroma
 DOCUMENTS_PATH=/app/data/documents
@@ -75,7 +75,7 @@ streamlit run streamlit_app/app.py
 For local non-Docker mode, point `.env` to:
 
 ```env
-POSTGRES_URL=postgresql+psycopg://rag:rag@localhost:5432/rag
+POSTGRES_URL=postgresql+psycopg://ollama_rag_studio:ollama_rag_studio@localhost:5432/ollama_rag_studio
 REDIS_URL=redis://localhost:6379/0
 OLLAMA_BASE_URL=http://localhost:11434
 ```

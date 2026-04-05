@@ -42,10 +42,10 @@ def load_ollama_models() -> list[str]:
         return []
 
 
-st.set_page_config(page_title="Offline Ollama RAG", layout="wide")
+st.set_page_config(page_title="Ollama RAG Studio", layout="wide")
 init_state()
 
-st.title("Offline Local RAG Chat")
+st.title("Ollama RAG Studio")
 st.caption("Default mode uses local Ollama. You can switch to another OpenAI-compatible provider from the sidebar.")
 
 with st.sidebar:

@@ -1,4 +1,4 @@
-# Offline Ollama RAG with FastAPI, Streamlit, Chroma, Postgres, and Redis
+# Ollama RAG Studio
 
 This project is an offline-first local Retrieval-Augmented Generation stack built around Ollama and ChromaDB. FastAPI handles document ingestion and chat APIs, Streamlit provides the user interface, Chroma stores embeddings, Postgres stores session history, and Redis caches repeated answers.
 
@@ -47,7 +47,7 @@ docker/
 data/
 README.md
 setup.md
-useages.md
+usage.md
 train.md
 ```
 
@@ -59,4 +59,4 @@ train.md
 4. Start Docker Compose
 5. Open Streamlit on `http://localhost:8501`
 
-Read [setup.md](/Users/sameeralam/Documents/GitHub/rag/setup.md) for the full setup flow.
+Read `setup.md` for the full setup flow.

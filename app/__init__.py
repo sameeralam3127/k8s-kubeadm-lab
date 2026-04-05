@@ -1,1 +1,1 @@
-"""Offline-first RAG application package."""
+"""Ollama RAG Studio application package."""
