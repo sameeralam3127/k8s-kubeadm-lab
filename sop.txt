@@ -1,7 +1,0 @@
-Phishing Incident Response SOP
-
-1. User reports suspicious email to SOC.
-2. SOC analyst validates the phishing attempt.
-3. If confirmed, block sender domain.
-4. Reset affected user credentials.
-5. Conduct awareness training if required.
