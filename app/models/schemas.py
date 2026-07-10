@@ -53,6 +53,8 @@ class ChatMessageResponse(BaseModel):
 class SourceItem(BaseModel):
     source: str
     page: int | None = None
+    url: str | None = None
+    updated_at: str | None = None
     preview: str
 
 
@@ -64,6 +66,14 @@ class ChatResponse(BaseModel):
     model_name: str
     sources: list[SourceItem]
     history: list[ChatMessageResponse]
+    freshness: dict[str, Any] | None = None
+
+
+class ComputeCentralRefreshResponse(BaseModel):
+    last_refresh: str | None = None
+    pages_discovered: int
+    pages_changed: int
+    chunks_indexed: int
 
 
 class SessionHistoryResponse(BaseModel):

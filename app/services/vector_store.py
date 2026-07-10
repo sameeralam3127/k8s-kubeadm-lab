@@ -13,13 +13,14 @@ settings = get_settings()
 
 
 class VectorStoreService:
-    def __init__(self) -> None:
+    def __init__(self, collection_name: str | None = None) -> None:
         self.embedding_service = EmbeddingService()
         self.client = chromadb.PersistentClient(
             path=settings.chroma_path,
             settings=ChromaSettings(anonymized_telemetry=False),
         )
-        self.collection = self.client.get_or_create_collection(name=settings.chroma_collection)
+        self.collection_name = collection_name or settings.chroma_collection
+        self.collection = self.client.get_or_create_collection(name=self.collection_name)
 
     async def add_documents(self, chunks: list[dict[str, Any]]) -> int:
         if not chunks:
@@ -53,10 +54,14 @@ class VectorStoreService:
 
     def reset(self) -> None:
         try:
-            self.client.delete_collection(settings.chroma_collection)
+            self.client.delete_collection(self.collection_name)
         except Exception:
             pass
-        self.collection = self.client.get_or_create_collection(name=settings.chroma_collection)
+        self.collection = self.client.get_or_create_collection(name=self.collection_name)
+
+    def delete_by_url(self, url: str) -> None:
+        """Replace all chunks for one crawled page before writing its new version."""
+        self.collection.delete(where={"url": url})
 
     def ensure_storage(self) -> None:
         Path(settings.chroma_path).mkdir(parents=True, exist_ok=True)

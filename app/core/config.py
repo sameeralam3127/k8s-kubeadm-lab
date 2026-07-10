@@ -35,9 +35,16 @@ class Settings(BaseSettings):
     chroma_path: str = str(BASE_DIR / "data" / "chroma")
     documents_path: str = str(BASE_DIR / "data" / "documents")
     chroma_collection: str = "ollama_rag_studio_documents"
+    compute_central_collection: str = "compute_central_pages"
+    compute_central_url: str = "https://computecentral.in/"
+    compute_central_max_pages: int = 40
+    compute_central_refresh_minutes: int = 30
+    compute_central_request_timeout_seconds: int = 20
+    compute_central_state_path: str = str(BASE_DIR / "data" / "compute_central_state.json")
     chunk_size: int = 1200
     chunk_overlap: int = 200
     retrieval_k: int = 4
+    site_retrieval_max_distance: float = 1.2
     cache_ttl_seconds: int = 900
 
     postgres_url: str = "postgresql+psycopg://ollama_rag_studio:ollama_rag_studio@localhost:5432/ollama_rag_studio"

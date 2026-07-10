@@ -12,6 +12,7 @@ This project is an offline-first local Retrieval-Augmented Generation stack buil
 - Postgres-backed conversation history
 - Redis-backed response cache
 - OpenAI-compatible provider support for optional external model usage
+- Compute Central website chat with a bounded public-site crawl, content-hash refreshes, and source links
 - Docker Compose for frontend, backend, Postgres, and Redis
 
 ## Why use RAG if an LLM already exists?
@@ -28,6 +29,12 @@ An LLM already knows general language patterns, but it does not automatically kn
   - Reprocesses PDFs from the local documents directory
 - `POST /api/v1/chat`
   - Sends a user message through the RAG pipeline
+- `POST /api/v1/compute-central/chat`
+  - Refreshes stale Compute Central content on demand, then answers using only the local Compute Central index
+- `POST /api/v1/compute-central/refresh`
+  - Manually refreshes the public `https://computecentral.in/` index
+- `GET /api/v1/compute-central/status`
+  - Shows the last successful site-index refresh time
 - `GET /api/v1/chat/history/{session_id}`
   - Reads persisted session history
 - `GET /api/v1/models/ollama`
@@ -60,3 +67,7 @@ train.md
 5. Open Streamlit on `http://localhost:8501`
 
 Read `setup.md` for the full setup flow.
+
+## Compute Central freshness
+
+Compute Central is a static GitHub Pages site, so this app reads its public sitemap and homepage links rather than expecting a website API. The backend keeps a separate Chroma collection, stores page URL/title/headings/hash/HTTP validators/fetch time in `data/compute_central_state.json`, and replaces only pages whose content hash changed. It refreshes once at backend startup and at `COMPUTE_CENTRAL_REFRESH_MINUTES` intervals (30 by default); a site question also refreshes when that interval has elapsed. Use the sidebar **Refresh Compute Central content** control when you need an immediate update. Answers expose the indexed page links and fetch timestamps.

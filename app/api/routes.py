@@ -8,6 +8,7 @@ from app.core.config import get_settings
 from app.models.schemas import (
     ChatRequest,
     ChatResponse,
+    ComputeCentralRefreshResponse,
     DocumentUploadResponse,
     HealthResponse,
     OllamaModelItem,
@@ -17,6 +18,7 @@ from app.models.schemas import (
     SessionHistoryResponse,
 )
 from app.services.chat_service import ChatService
+from app.services.compute_central_service import ComputeCentralChatService, ComputeCentralService
 from app.services.document_service import DocumentService
 from app.services.provider_service import ProviderService
 
@@ -86,6 +88,23 @@ async def chat(payload: ChatRequest, db: Session = Depends(get_db)) -> ChatRespo
         provider_config=payload.provider_config,
     )
     return ChatResponse(**response)
+
+
+@router.post("/compute-central/refresh", response_model=ComputeCentralRefreshResponse)
+async def refresh_compute_central() -> ComputeCentralRefreshResponse:
+    return ComputeCentralRefreshResponse(**await ComputeCentralService().refresh())
+
+
+@router.get("/compute-central/status", response_model=ComputeCentralRefreshResponse)
+async def compute_central_status() -> ComputeCentralRefreshResponse:
+    return ComputeCentralRefreshResponse(**ComputeCentralService().status())
+
+
+@router.post("/compute-central/chat", response_model=ChatResponse)
+async def compute_central_chat(payload: ChatRequest, db: Session = Depends(get_db)) -> ChatResponse:
+    return ChatResponse(**await ComputeCentralChatService().chat(
+        db, session_id=payload.session_id, message=payload.message, provider_config=payload.provider_config
+    ))
 
 
 @router.get("/chat/history/{session_id}", response_model=SessionHistoryResponse)

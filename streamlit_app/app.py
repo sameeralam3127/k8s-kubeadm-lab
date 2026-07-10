@@ -74,6 +74,17 @@ with st.sidebar:
         st.caption("Works with OpenAI-compatible providers such as OpenAI, Groq, Together, or OpenRouter.")
 
     st.divider()
+    st.header("Compute Central")
+    st.caption("This mode refreshes and searches computecentral.in only; it does not mix in uploaded PDFs.")
+    if st.button("Refresh Compute Central content", use_container_width=True):
+        try:
+            result = api_post("/compute-central/refresh")
+            st.success(f"Refresh complete: {result['pages_changed']} pages changed, {result['chunks_indexed']} chunks indexed.")
+        except Exception as exc:
+            st.error(f"Refresh failed: {exc}")
+
+    chat_mode = st.radio("Chat knowledge", ["Compute Central (fresh website)", "Uploaded PDFs"], index=0)
+    st.divider()
     if st.button("Clear chat history", use_container_width=True):
         st.session_state.messages = []
         st.session_state.session_id = str(uuid4())
@@ -118,11 +129,16 @@ for item in st.session_state.messages:
         if item.get("sources"):
             with st.expander("Sources"):
                 for source in item["sources"]:
-                    st.write(f"{source['source']} (page {source.get('page')})")
+                    if source.get("url"):
+                        st.markdown(f"[{source['source']}]({source['url']})")
+                        if source.get("updated_at"):
+                            st.caption(f"Fetched {source['updated_at']}")
+                    else:
+                        st.write(f"{source['source']} (page {source.get('page')})")
                     st.caption(source["preview"])
 
 
-prompt = st.chat_input("Ask a question about your uploaded PDFs...")
+prompt = st.chat_input("Ask a question about Compute Central..." if chat_mode.startswith("Compute") else "Ask a question about your uploaded PDFs...")
 if prompt:
     st.session_state.messages.append({"role": "user", "content": prompt})
     with st.chat_message("user"):
@@ -136,7 +152,7 @@ if prompt:
         with st.spinner("Thinking with retrieved context..."):
             try:
                 result = api_post(
-                    "/chat",
+                    "/compute-central/chat" if chat_mode.startswith("Compute") else "/chat",
                     json={
                         "session_id": st.session_state.session_id,
                         "message": prompt,
@@ -147,8 +163,15 @@ if prompt:
                 st.markdown(result["answer"])
                 with st.expander("Sources"):
                     for source in result["sources"]:
-                        st.write(f"{source['source']} (page {source.get('page')})")
+                        if source.get("url"):
+                            st.markdown(f"[{source['source']}]({source['url']})")
+                            if source.get("updated_at"):
+                                st.caption(f"Fetched {source['updated_at']}")
+                        else:
+                            st.write(f"{source['source']} (page {source.get('page')})")
                         st.caption(source["preview"])
+                if result.get("freshness", {}).get("last_refresh"):
+                    st.caption(f"Compute Central content last refreshed: {result['freshness']['last_refresh']}")
                 if result["cached"]:
                     st.caption("Served from Redis cache.")
                 st.session_state.messages.append(
