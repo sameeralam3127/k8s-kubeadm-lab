@@ -28,7 +28,7 @@ need_env() {
   fi
   # shellcheck disable=SC1091
   . "${SELF_DIR}/lab.env"
-  LAB_ROOT="$SELF_DIR"
+  export LAB_ROOT="$SELF_DIR"
   parse_workers
   # Guard: an empty WORKERS list must not trip `set -u` later.
   WORKER_NAMES=("${WORKER_NAMES[@]:-}"); WORKER_IPS=("${WORKER_IPS[@]:-}")

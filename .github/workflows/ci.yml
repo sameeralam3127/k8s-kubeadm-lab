@@ -154,8 +154,18 @@ jobs:
       - name: Every script carries an SPDX identifier
         run: |
           fail=0
-          for f in lab $(find scripts labs -name '*.sh') $(find windows -name '*.ps1'); do
+          # Shell scripts carry the identifier right after the shebang.
+          for f in lab $(find scripts labs -name '*.sh'); do
             if head -8 "$f" | grep -q 'SPDX-License-Identifier: Apache-2.0'; then
+              echo "  ok    $f"
+            else
+              echo "  MISSING SPDX  $f"; fail=1
+            fi
+          done
+          # PowerShell puts its comment-based help block first, so the
+          # identifier legitimately sits further down the file.
+          for f in $(find windows -name '*.ps1'); do
+            if head -60 "$f" | grep -q 'SPDX-License-Identifier: Apache-2.0'; then
               echo "  ok    $f"
             else
               echo "  MISSING SPDX  $f"; fail=1

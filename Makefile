@@ -88,7 +88,8 @@ lint: ## Syntax-check every shell script in the repo
 	done; \
 	if command -v shellcheck >/dev/null 2>&1; then \
 	  echo; echo "shellcheck:"; \
-	  shellcheck -S warning lab $$(find scripts labs -name '*.sh') || true; \
+	  shellcheck -S warning lab $$(find scripts labs -name '*.sh') || fail=1; \
+	  [ $$fail -eq 0 ] && echo "  no findings"; \
 	else \
 	  echo; echo "  (install shellcheck for deeper analysis)"; \
 	fi; \
