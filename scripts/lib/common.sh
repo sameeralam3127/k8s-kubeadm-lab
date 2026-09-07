@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 Sameer Alam
 # =============================================================================
 # common.sh - shared helpers for every script in this lab.
 # Source it, don't run it:   . "$(dirname "$0")/../lib/common.sh"
@@ -85,7 +87,8 @@ confirm() {
 # backup_file <path> - keep a timestamped copy before we edit something.
 backup_file() {
   [ -f "$1" ] || return 0
-  local dest="$1.lab-bak.$(date +%Y%m%d%H%M%S)"
+  local dest
+  dest="$1.lab-bak.$(date +%Y%m%d%H%M%S)"
   cp -a "$1" "$dest"
   info "Backed up $1 -> $dest"
 }

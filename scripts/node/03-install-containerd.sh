@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 Sameer Alam
 # =============================================================================
 # 03-install-containerd.sh - install and configure the container runtime.
 # Run on EVERY node. Idempotent.

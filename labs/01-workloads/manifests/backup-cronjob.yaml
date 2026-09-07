@@ -1,0 +1,28 @@
+# Lab 01 Task 6 - a CronJob runs a Job on a schedule.
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: pretend-backup
+  namespace: lab01
+spec:
+  schedule: "* * * * *"          # every minute, so you do not wait around
+  concurrencyPolicy: Forbid       # never let two runs overlap
+  successfulJobsHistoryLimit: 3   # keep the last 3 successes for inspection
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      backoffLimit: 2             # retry a failed run twice, then give up
+      template:
+        spec:
+          restartPolicy: OnFailure
+          containers:
+            - name: backup
+              image: busybox:1.36
+              command:
+                - /bin/sh
+                - -c
+                - 'echo "backup started at $(date -Iseconds)"; sleep 5; echo "backup complete"'
+              resources:
+                requests:
+                  cpu: 10m
+                  memory: 16Mi

@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 Sameer Alam
 # =============================================================================
 # 01-preflight.sh - verify this VM can actually host a Kubernetes node.
 # Read-only: it changes nothing, it only reports. Run it on EVERY node first.

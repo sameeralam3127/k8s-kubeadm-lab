@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 Sameer Alam
 # =============================================================================
 # 20-verify-cluster.sh - end-to-end health check. Run on the control plane.
 # Read-only apart from a temporary namespace it creates and deletes.

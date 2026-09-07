@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 Sameer Alam
 # =============================================================================
 # 30-etcd-backup.sh - take, verify and rotate an etcd snapshot.
 # Run ONLY on the control plane. Safe to run any time; does not stop anything.

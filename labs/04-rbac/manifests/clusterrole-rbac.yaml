@@ -1,0 +1,47 @@
+# Lab 04 Task 3 - cluster-scoped RBAC.
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: node-viewer
+  namespace: lab04
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: node-viewer-cluster
+  # No namespace: ClusterRoles are cluster-scoped objects.
+rules:
+  - apiGroups: [""]
+    resources: ["nodes", "nodes/status"]
+    # Nodes are CLUSTER-scoped, so only a ClusterRole can grant access to them.
+    # A namespaced Role physically cannot.
+    verbs: ["get", "list", "watch"]
+  - apiGroups: ["metrics.k8s.io"]
+    resources: ["nodes", "pods"]
+    verbs: ["get", "list"]          # lets this identity run `kubectl top`
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: pod-reader-cluster
+  # Defined once here, then bound with a RoleBinding per namespace in Task 3.
+  # That combination is the most useful and least understood pattern in RBAC.
+rules:
+  - apiGroups: [""]
+    resources: ["pods", "pods/log"]
+    verbs: ["get", "list", "watch"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: node-viewer-binding
+subjects:
+  - kind: ServiceAccount
+    name: node-viewer
+    namespace: lab04         # the SA lives in a namespace even though the
+                             # binding's effect is cluster-wide
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: node-viewer-cluster

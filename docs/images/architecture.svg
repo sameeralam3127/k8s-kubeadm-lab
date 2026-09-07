@@ -1,0 +1,151 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 660" width="1200" height="660" role="img" aria-label="Lab topology: a macOS host and a Windows host, each running an Ubuntu VM bridged onto the same LAN, driven over SSH by the lab CLI">
+  <title>k8s-kubeadm-lab topology</title>
+  <desc>The control-plane VM runs on the macOS host and the worker VM on the Windows host. Both are bridged onto the same LAN so they can reach each other directly. Either host drives both nodes over SSH using the lab CLI.</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#5aa9e6"/>
+    </marker>
+    <marker id="arrowg" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#7fd88f"/>
+    </marker>
+  </defs>
+
+  <rect width="1200" height="660" rx="12" fill="#0d1b2a"/>
+
+  <text x="600" y="42" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Helvetica, Arial, sans-serif"
+        font-size="22" font-weight="700" fill="#ffffff">Lab topology</text>
+  <text x="600" y="68" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Helvetica, Arial, sans-serif"
+        font-size="14" fill="#7ba3cc">Two physical machines, two bridged VMs, one cluster — driven entirely over SSH</text>
+
+  <!-- ========== macOS host ========== -->
+  <g transform="translate(60 110)">
+    <rect width="440" height="300" rx="12" fill="#12263f" stroke="#2a4a70" stroke-width="1.5"/>
+    <text x="20" y="30" font-family="-apple-system, Segoe UI, sans-serif" font-size="15" font-weight="600" fill="#a8c7e8">macOS host</text>
+    <text x="20" y="50" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="12" fill="#7ba3cc">UTM (Apple Silicon) or VirtualBox (Intel)</text>
+
+    <rect x="20" y="68" width="400" height="212" rx="10" fill="#0a1826" stroke="#326ce5" stroke-width="1.5"/>
+    <text x="40" y="94" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="14" font-weight="700" fill="#ffffff">k8s-cp</text>
+    <text x="40" y="113" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="12" fill="#7fd88f">192.168.1.101</text>
+    <text x="40" y="131" font-family="-apple-system, Segoe UI, sans-serif" font-size="11" fill="#7ba3cc">Ubuntu Server · control plane · 2 vCPU · 4 GB</text>
+
+    <g font-family="ui-monospace, Menlo, Consolas, monospace" font-size="11">
+      <g transform="translate(40 144)">
+        <rect width="170" height="26" rx="5" fill="#326ce5" opacity="0.25" stroke="#5aa9e6" stroke-width="0.8"/>
+        <text x="85" y="17" text-anchor="middle" fill="#cfe4f7">kube-apiserver :6443</text>
+      </g>
+      <g transform="translate(220 144)">
+        <rect width="160" height="26" rx="5" fill="#e5a232" opacity="0.25" stroke="#f0c46e" stroke-width="0.8"/>
+        <text x="80" y="17" text-anchor="middle" fill="#f5dcae">etcd :2379</text>
+      </g>
+      <g transform="translate(40 176)">
+        <rect width="170" height="26" rx="5" fill="#326ce5" opacity="0.25" stroke="#5aa9e6" stroke-width="0.8"/>
+        <text x="85" y="17" text-anchor="middle" fill="#cfe4f7">scheduler · controller</text>
+      </g>
+      <g transform="translate(220 176)">
+        <rect width="160" height="26" rx="5" fill="#326ce5" opacity="0.25" stroke="#5aa9e6" stroke-width="0.8"/>
+        <text x="80" y="17" text-anchor="middle" fill="#cfe4f7">CoreDNS</text>
+      </g>
+      <g transform="translate(40 208)">
+        <rect width="340" height="26" rx="5" fill="#8a63d2" opacity="0.25" stroke="#b18ae8" stroke-width="0.8"/>
+        <text x="170" y="17" text-anchor="middle" fill="#ddcdf5">kubelet · containerd · CNI agent</text>
+      </g>
+      <g transform="translate(40 240)">
+        <rect width="340" height="26" rx="5" fill="#1f6f4a" opacity="0.30" stroke="#7fd88f" stroke-width="0.8"/>
+        <text x="170" y="17" text-anchor="middle" fill="#b9ebc6">/opt/etcd-backups — snapshots</text>
+      </g>
+    </g>
+  </g>
+
+  <!-- ========== Windows host ========== -->
+  <g transform="translate(700 110)">
+    <rect width="440" height="300" rx="12" fill="#12263f" stroke="#2a4a70" stroke-width="1.5"/>
+    <text x="20" y="30" font-family="-apple-system, Segoe UI, sans-serif" font-size="15" font-weight="600" fill="#a8c7e8">Windows host</text>
+    <text x="20" y="50" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="12" fill="#7ba3cc">VirtualBox, or Hyper-V with an External switch</text>
+
+    <rect x="20" y="68" width="400" height="212" rx="10" fill="#0a1826" stroke="#326ce5" stroke-width="1.5"/>
+    <text x="40" y="94" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="14" font-weight="700" fill="#ffffff">k8s-worker1</text>
+    <text x="40" y="113" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="12" fill="#7fd88f">192.168.1.102</text>
+    <text x="40" y="131" font-family="-apple-system, Segoe UI, sans-serif" font-size="11" fill="#7ba3cc">Ubuntu Server · worker · 2 vCPU · 2 GB</text>
+
+    <g font-family="ui-monospace, Menlo, Consolas, monospace" font-size="11">
+      <g transform="translate(40 144)">
+        <rect width="340" height="26" rx="5" fill="#8a63d2" opacity="0.25" stroke="#b18ae8" stroke-width="0.8"/>
+        <text x="170" y="17" text-anchor="middle" fill="#ddcdf5">kubelet :10250 · containerd · CNI agent</text>
+      </g>
+      <g transform="translate(40 176)">
+        <rect width="165" height="26" rx="5" fill="#326ce5" opacity="0.25" stroke="#5aa9e6" stroke-width="0.8"/>
+        <text x="82" y="17" text-anchor="middle" fill="#cfe4f7">kube-proxy</text>
+      </g>
+      <g transform="translate(215 176)">
+        <rect width="165" height="26" rx="5" fill="#326ce5" opacity="0.25" stroke="#5aa9e6" stroke-width="0.8"/>
+        <text x="82" y="17" text-anchor="middle" fill="#cfe4f7">NodePort 30000+</text>
+      </g>
+      <g transform="translate(40 208)">
+        <rect width="340" height="58" rx="6" fill="#0d2338" stroke="#3d6ea8" stroke-width="1" stroke-dasharray="4 3"/>
+        <text x="170" y="30" text-anchor="middle" fill="#8fb8dd">your application pods</text>
+        <text x="170" y="48" text-anchor="middle" fill="#5f88ad" font-size="10">scheduled here by the control plane</text>
+      </g>
+    </g>
+  </g>
+
+  <!-- LAN bridge between the two VMs -->
+  <line x1="500" y1="260" x2="700" y2="260" stroke="#7fd88f" stroke-width="2.5"
+        marker-start="url(#arrowg)" marker-end="url(#arrowg)"/>
+  <rect x="516" y="228" width="168" height="24" rx="12" fill="#0d1b2a" stroke="#7fd88f" stroke-width="1"/>
+  <text x="600" y="245" text-anchor="middle" font-family="ui-monospace, Menlo, Consolas, monospace"
+        font-size="11" fill="#7fd88f">bridged · same LAN</text>
+  <text x="600" y="286" text-anchor="middle" font-family="-apple-system, Segoe UI, sans-serif"
+        font-size="11" fill="#5f88ad">pod-to-pod and Service traffic — NAT breaks this</text>
+
+  <!-- ========== the CLI ========== -->
+  <g transform="translate(370 460)">
+    <rect width="460" height="150" rx="12" fill="#0a1826" stroke="#5aa9e6" stroke-width="2"/>
+    <text x="230" y="34" text-anchor="middle" font-family="ui-monospace, Menlo, Consolas, monospace"
+          font-size="15" font-weight="700" fill="#ffffff">./lab &#160;|&#160; windows\lab.ps1</text>
+    <text x="230" y="56" text-anchor="middle" font-family="-apple-system, Segoe UI, sans-serif"
+          font-size="11" fill="#7ba3cc">runs from either host · both read the same lab.env</text>
+
+    <g font-family="ui-monospace, Menlo, Consolas, monospace" font-size="11">
+      <g transform="translate(24 72)">
+        <rect width="98" height="24" rx="5" fill="#326ce5" opacity="0.28" stroke="#5aa9e6" stroke-width="0.8"/>
+        <text x="49" y="16" text-anchor="middle" fill="#cfe4f7">preflight</text>
+      </g>
+      <g transform="translate(132 72)">
+        <rect width="98" height="24" rx="5" fill="#326ce5" opacity="0.28" stroke="#5aa9e6" stroke-width="0.8"/>
+        <text x="49" y="16" text-anchor="middle" fill="#cfe4f7">up</text>
+      </g>
+      <g transform="translate(240 72)">
+        <rect width="98" height="24" rx="5" fill="#326ce5" opacity="0.28" stroke="#5aa9e6" stroke-width="0.8"/>
+        <text x="49" y="16" text-anchor="middle" fill="#cfe4f7">verify</text>
+      </g>
+      <g transform="translate(348 72)">
+        <rect width="88" height="24" rx="5" fill="#326ce5" opacity="0.28" stroke="#5aa9e6" stroke-width="0.8"/>
+        <text x="44" y="16" text-anchor="middle" fill="#cfe4f7">status</text>
+      </g>
+      <g transform="translate(24 106)">
+        <rect width="98" height="24" rx="5" fill="#1f6f4a" opacity="0.35" stroke="#7fd88f" stroke-width="0.8"/>
+        <text x="49" y="16" text-anchor="middle" fill="#b9ebc6">backup</text>
+      </g>
+      <g transform="translate(132 106)">
+        <rect width="98" height="24" rx="5" fill="#1f6f4a" opacity="0.35" stroke="#7fd88f" stroke-width="0.8"/>
+        <text x="49" y="16" text-anchor="middle" fill="#b9ebc6">restore</text>
+      </g>
+      <g transform="translate(240 106)">
+        <rect width="98" height="24" rx="5" fill="#8a2b2b" opacity="0.35" stroke="#e8888a" stroke-width="0.8"/>
+        <text x="49" y="16" text-anchor="middle" fill="#f3c3c4">dr-drill</text>
+      </g>
+      <g transform="translate(348 106)">
+        <rect width="88" height="24" rx="5" fill="#8a2b2b" opacity="0.35" stroke="#e8888a" stroke-width="0.8"/>
+        <text x="44" y="16" text-anchor="middle" fill="#f3c3c4">reset</text>
+      </g>
+    </g>
+  </g>
+
+  <!-- SSH arrows from CLI to each node -->
+  <path d="M 470 460 C 400 430 300 430 280 412" fill="none" stroke="#5aa9e6" stroke-width="2"
+        stroke-dasharray="6 4" marker-end="url(#arrow)"/>
+  <path d="M 730 460 C 800 430 900 430 920 412" fill="none" stroke="#5aa9e6" stroke-width="2"
+        stroke-dasharray="6 4" marker-end="url(#arrow)"/>
+  <text x="330" y="446" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="11" fill="#5aa9e6">ssh :22</text>
+  <text x="820" y="446" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="11" fill="#5aa9e6">ssh :22</text>
+</svg>

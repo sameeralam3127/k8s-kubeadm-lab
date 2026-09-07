@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 Sameer Alam
 # =============================================================================
 # 11-install-cni.sh - install the pod network. Run ONLY on the control plane,
 # once, after kubeadm init. Idempotent.

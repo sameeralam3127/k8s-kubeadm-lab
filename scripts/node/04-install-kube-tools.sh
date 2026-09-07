@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 Sameer Alam
 # =============================================================================
 # 04-install-kube-tools.sh - install kubeadm, kubelet and kubectl from the
 # official pkgs.k8s.io repository. Run on EVERY node. Idempotent.

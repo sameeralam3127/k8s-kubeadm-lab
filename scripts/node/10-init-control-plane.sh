@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 Sameer Alam
 # =============================================================================
 # 10-init-control-plane.sh - bootstrap the control plane with kubeadm.
 # Run ONLY on the control-plane node. Idempotent (detects an existing cluster).

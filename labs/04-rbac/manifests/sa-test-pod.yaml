@@ -1,0 +1,24 @@
+# Lab 04 Task 2 - a pod that runs kubectl AS the pod-reader ServiceAccount, so
+# you can feel the permission boundary from the inside.
+apiVersion: v1
+kind: Pod
+metadata:
+  name: rbac-tester
+  namespace: lab04
+spec:
+  serviceAccountName: pod-reader   # without this you get the 'default' SA
+  containers:
+    - name: kubectl
+      image: bitnami/kubectl:1.31
+      command: ["sleep", "infinity"]
+      resources:
+        requests: { cpu: 20m, memory: 48Mi }
+        limits:   { memory: 128Mi }
+      securityContext:
+        runAsUser: 1001
+        allowPrivilegeEscalation: false
+        capabilities:
+          drop: ["ALL"]
+  # The kubelet projects a short-lived, audience-bound token into every pod at
+  # /var/run/secrets/kubernetes.io/serviceaccount/token. kubectl finds it
+  # automatically - that is why no kubeconfig is needed inside the pod.

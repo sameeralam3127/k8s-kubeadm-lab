@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 Sameer Alam
 # =============================================================================
 # 31-etcd-restore.sh - restore the cluster from an etcd snapshot.
 # Run ONLY on the control plane. DESTRUCTIVE: the cluster reverts to the

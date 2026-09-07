@@ -1,0 +1,16 @@
+# SPDX-License-Identifier: Apache-2.0
+#
+# Only GitHub Actions are managed here. The Kubernetes, CNI and add-on versions
+# this lab installs are pinned in lab.env.example and updated deliberately,
+# because bumping them changes what the exercises teach.
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: "ci"
+    labels:
+      - dependencies

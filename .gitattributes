@@ -1,0 +1,14 @@
+# Shell scripts MUST have LF endings - a CRLF shebang breaks bash on the nodes
+# with "bad interpreter: /usr/bin/env bash^M".
+*.sh        text eol=lf
+lab         text eol=lf
+*.yaml      text eol=lf
+*.yml       text eol=lf
+lab.env*    text eol=lf
+Makefile    text eol=lf
+
+# PowerShell is happiest with CRLF on Windows.
+*.ps1       text eol=crlf
+
+*.md        text
+*.db        binary

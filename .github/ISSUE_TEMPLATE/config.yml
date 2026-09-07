@@ -1,0 +1,17 @@
+# Issues are disabled on this repository. If that setting is ever turned back
+# on, this configuration removes the blank-issue option and routes people to
+# the right place instead.
+blank_issues_enabled: false
+contact_links:
+  - name: Security vulnerability (private)
+    url: https://github.com/sameeralam3127/k8s-kubeadm-lab/security/advisories/new
+    about: Report a security problem in these scripts privately. Never in public.
+  - name: Troubleshooting the lab
+    url: https://github.com/sameeralam3127/k8s-kubeadm-lab/blob/main/docs/TROUBLESHOOTING.md
+    about: Symptom-to-cause-to-fix for every failure this lab produces. Start here.
+  - name: Questions about Kubernetes itself
+    url: https://slack.k8s.io/
+    about: The Kubernetes community Slack. This project does not provide support.
+  - name: Want a change? Fork it.
+    url: https://github.com/sameeralam3127/k8s-kubeadm-lab/blob/main/CONTRIBUTING.md
+    about: Apache-2.0 grants you the right to modify and redistribute. No permission needed.

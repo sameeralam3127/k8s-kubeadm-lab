@@ -1,0 +1,37 @@
+# Lab 02 - a backend that reports which pod answered, so you can see load
+# balancing actually happening.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend
+  namespace: lab02
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: backend
+  template:
+    metadata:
+      labels:
+        app: backend
+        tier: data
+    spec:
+      containers:
+        - name: echo
+          # This image answers every request with the pod's hostname and the
+          # request headers - ideal for watching a Service spread traffic.
+          image: hashicorp/http-echo:1.0
+          args:
+            - -listen=:8080
+            - -text=hello from backend
+          ports:
+            - containerPort: 8080
+              name: http
+          readinessProbe:
+            tcpSocket:
+              port: http
+            initialDelaySeconds: 2
+            periodSeconds: 5
+          resources:
+            requests: { cpu: 20m, memory: 24Mi }
+            limits:   { memory: 64Mi }

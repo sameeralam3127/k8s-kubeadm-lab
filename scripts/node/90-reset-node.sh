@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 Sameer Alam
 # =============================================================================
 # 90-reset-node.sh - tear this node back down to a clean, pre-kubeadm state.
 # DESTRUCTIVE. Use it to rebuild the lab from scratch (great CKA practice).

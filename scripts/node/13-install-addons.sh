@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 Sameer Alam
 # =============================================================================
 # 13-install-addons.sh - optional quality-of-life add-ons for the lab.
 # Run ONLY on the control plane. Idempotent. Everything here is opt-out.

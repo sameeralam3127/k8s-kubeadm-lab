@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 Sameer Alam
 # =============================================================================
 # 99-diagnostics.sh - collect everything you would want when the lab misbehaves,
 # into one tarball you can read offline or attach to a question.

@@ -1,0 +1,35 @@
+# Lab 03 Task 3 - a PVC plus a pod that mounts it.
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: data-claim
+  namespace: lab03
+spec:
+  accessModes:
+    - ReadWriteOnce        # one node may mount it read-write at a time
+  resources:
+    requests:
+      storage: 1Gi
+  # storageClassName is omitted on purpose: the cluster's DEFAULT StorageClass
+  # (local-path, installed by ./lab addons) will provision a PV automatically.
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pvc-writer
+  namespace: lab03
+spec:
+  volumes:
+    - name: data
+      persistentVolumeClaim:
+        claimName: data-claim
+  containers:
+    - name: app
+      image: busybox:1.36
+      command: ["sleep", "infinity"]
+      volumeMounts:
+        - name: data
+          mountPath: /data
+      resources:
+        requests: { cpu: 10m, memory: 16Mi }

@@ -1,0 +1,42 @@
+# Lab 02 Task 5 - two identical clients that differ only in their labels, so a
+# NetworkPolicy can allow one and deny the other.
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: allowed-client
+  namespace: lab02
+spec:
+  replicas: 1
+  selector:
+    matchLabels: { app: allowed-client, access: backend }
+  template:
+    metadata:
+      labels: { app: allowed-client, access: backend }   # <- the allow-listed label
+    spec:
+      containers:
+        - name: curl
+          image: curlimages/curl:8.10.1
+          command: ["sleep", "infinity"]
+          resources:
+            requests: { cpu: 10m, memory: 16Mi }
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: denied-client
+  namespace: lab02
+spec:
+  replicas: 1
+  selector:
+    matchLabels: { app: denied-client }
+  template:
+    metadata:
+      labels: { app: denied-client }                     # <- no access label
+    spec:
+      containers:
+        - name: curl
+          image: curlimages/curl:8.10.1
+          command: ["sleep", "infinity"]
+          resources:
+            requests: { cpu: 10m, memory: 16Mi }

@@ -1,0 +1,43 @@
+# Lab 02 - the three Service shapes, all selecting the same pods.
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend-clusterip
+  namespace: lab02
+spec:
+  type: ClusterIP          # the default: a virtual IP reachable only in-cluster
+  selector:
+    app: backend           # <- must match the POD labels, not the Deployment's
+  ports:
+    - name: http
+      port: 80             # the port the Service listens on
+      targetPort: 8080     # the port the container listens on
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend-nodeport
+  namespace: lab02
+spec:
+  type: NodePort           # opens the same port on EVERY node in the cluster
+  selector:
+    app: backend
+  ports:
+    - name: http
+      port: 80
+      targetPort: 8080
+      nodePort: 30080      # must be 30000-32767; omit it to get one assigned
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend-headless
+  namespace: lab02
+spec:
+  clusterIP: None          # no VIP: DNS returns the pod IPs directly
+  selector:
+    app: backend
+  ports:
+    - name: http
+      port: 8080

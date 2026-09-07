@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 Sameer Alam
 # =============================================================================
 #  lab - the control CLI for k8s-kubeadm-lab (macOS / Linux hosts)
 #
@@ -193,9 +195,9 @@ cmd_check() {
   info "cni / podCIDR : ${CNI} / ${POD_CIDR}"
 
   section "Local tooling"
-  local missing=0
+  local missing_tool=0
   for c in ssh scp; do
-    if command -v "$c" >/dev/null 2>&1; then ok "$c found"; else err "$c missing"; missing=1; fi
+    if command -v "$c" >/dev/null 2>&1; then ok "$c found"; else err "$c missing"; missing_tool=1; fi
   done
   command -v kubectl >/dev/null 2>&1 && ok "kubectl found ($(kubectl version --client -o json 2>/dev/null | grep -m1 gitVersion | cut -d'"' -f4))" \
     || warn "kubectl not installed locally - './lab kubectl' still works over SSH"
@@ -222,7 +224,7 @@ cmd_check() {
     info "Fix with: ./lab ssh-setup   (or check the IPs in lab.env)"
     exit 1
   fi
-  [ "$missing" = 1 ] && exit 1
+  [ "$missing_tool" = 1 ] && exit 1
   ok "Everything checks out. Next: ./lab preflight"
 }
 
@@ -281,7 +283,7 @@ cmd_prep() {
   while read -r name ip role; do
     section "Preparing ${name} (${ip}, ${role})"
     sync_scripts "$ip"
-    rsudo "$ip" "$(node_env) NODE_NAME=${name} HOSTS_ENTRIES=$(printf '%q' "$hb") DISABLE_UFW=${DISABLE_UFW:-1}" \
+    rsudo "$ip" "$(node_env) NODE_NAME=${name} ROLE=${role} HOSTS_ENTRIES=$(printf '%q' "$hb") FIREWALL_MODE=${FIREWALL_MODE:-open-ports} SSH_PORT_ON_NODE=${SSH_PORT}" \
       "${REMOTE_DIR}/scripts/node/02-prep-node.sh" || die "prep failed on ${name}"
     rsudo "$ip" "$(node_env)" "${REMOTE_DIR}/scripts/node/03-install-containerd.sh" || die "containerd failed on ${name}"
     rsudo "$ip" "$(node_env)" "${REMOTE_DIR}/scripts/node/04-install-kube-tools.sh" || die "kube tools failed on ${name}"

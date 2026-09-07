@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 Sameer Alam
 # =============================================================================
 # 12-join-worker.sh - join this machine to the cluster as a worker.
 # Run ONLY on a worker node. Idempotent (detects an existing membership).

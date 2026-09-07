@@ -1,0 +1,67 @@
+# Lab 01 Task 3 - the same Deployment, now with health probes and a Service.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web
+  namespace: lab01
+  labels:
+    app: web
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: web
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      # Never drop below 2 serving pods, and add at most 1 extra during a roll.
+      maxUnavailable: 1
+      maxSurge: 1
+  template:
+    metadata:
+      labels:
+        app: web
+    spec:
+      containers:
+        - name: nginx
+          image: nginx:1.25-alpine
+          ports:
+            - containerPort: 80
+              name: http
+          readinessProbe:
+            # "Can this pod serve a request right now?" Failing removes it from
+            # the Service endpoints but does NOT restart it.
+            httpGet:
+              path: /index.html
+              port: http
+            initialDelaySeconds: 3
+            periodSeconds: 5
+            failureThreshold: 2
+          livenessProbe:
+            # "Is this container wedged?" Failing restarts the container, so
+            # keep it looser than readiness or you will restart-loop on a blip.
+            httpGet:
+              path: /
+              port: http
+            initialDelaySeconds: 10
+            periodSeconds: 15
+            failureThreshold: 3
+          resources:
+            requests:
+              cpu: 50m
+              memory: 32Mi
+            limits:
+              cpu: 200m
+              memory: 128Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: web-svc
+  namespace: lab01
+spec:
+  selector:
+    app: web
+  ports:
+    - port: 80
+      targetPort: http

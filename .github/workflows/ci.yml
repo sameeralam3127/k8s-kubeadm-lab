@@ -1,0 +1,193 @@
+# SPDX-License-Identifier: Apache-2.0
+#
+# Everything that can be checked without a real cluster. The node scripts need
+# Linux and root, so they are linted and shell-parsed rather than executed.
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+# Least privilege: nothing here needs to write to the repository.
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  shell:
+    name: Shell scripts
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Syntax check every script
+        run: |
+          fail=0
+          for f in lab $(find scripts labs -name '*.sh'); do
+            if bash -n "$f"; then echo "  ok    $f"; else echo "  FAIL  $f"; fail=1; fi
+          done
+          exit $fail
+
+      # macOS ships bash 3.2, so the host CLI must stay compatible with it.
+      - name: Verify bash 3.2 compatibility of the host CLI
+        run: |
+          if grep -nE '^\s*(mapfile|readarray)\b' lab; then
+            echo "::error::mapfile/readarray do not exist in bash 3.2 (macOS default)"
+            exit 1
+          fi
+          echo "  no bash 4+ builtins in ./lab"
+
+      - name: ShellCheck
+        uses: ludeeus/action-shellcheck@master
+        env:
+          SHELLCHECK_OPTS: -S warning -e SC1090,SC1091
+        with:
+          severity: warning
+          additional_files: lab
+
+  yaml:
+    name: Kubernetes manifests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Parse every manifest
+        run: |
+          python3 - <<'PY'
+          import glob, sys, yaml
+          bad = 0
+          for f in sorted(glob.glob('labs/**/*.yaml', recursive=True)):
+              try:
+                  docs = [d for d in yaml.safe_load_all(open(f)) if d]
+                  kinds = ', '.join(d.get('kind', '?') for d in docs)
+                  print(f"  ok    {f}  ({kinds})")
+              except Exception as e:
+                  print(f"  FAIL  {f}: {e}"); bad += 1
+          sys.exit(bad)
+          PY
+
+      - name: Validate manifests against the Kubernetes schema
+        run: |
+          curl -sSL -o kubeconform.tar.gz \
+            https://github.com/yannh/kubeconform/releases/download/v0.6.7/kubeconform-linux-amd64.tar.gz
+          tar xzf kubeconform.tar.gz kubeconform
+          # -ignore-missing-schemas allows the Calico operator CRDs, which are
+          # not part of the upstream Kubernetes schema set.
+          ./kubeconform -strict -summary -ignore-missing-schemas \
+            -kubernetes-version 1.31.0 $(find labs -name '*.yaml')
+
+  powershell:
+    name: PowerShell
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Parse every script
+        shell: pwsh
+        run: |
+          $fail = 0
+          Get-ChildItem -Recurse -Filter *.ps1 | ForEach-Object {
+            $errors = $null
+            [System.Management.Automation.Language.Parser]::ParseFile(
+              $_.FullName, [ref]$null, [ref]$errors) | Out-Null
+            if ($errors) {
+              Write-Host "  FAIL  $($_.Name)"
+              $errors | ForEach-Object { Write-Host "        $($_.Message)" }
+              $fail = 1
+            } else {
+              Write-Host "  ok    $($_.Name)"
+            }
+          }
+          exit $fail
+
+      - name: PSScriptAnalyzer
+        shell: pwsh
+        run: |
+          Install-Module PSScriptAnalyzer -Force -Scope CurrentUser -ErrorAction Stop
+          $r = Invoke-ScriptAnalyzer -Path . -Recurse -Severity Error,Warning `
+                 -ExcludeRule PSAvoidUsingWriteHost,PSUseShouldProcessForStateChangingFunctions,PSAvoidUsingPositionalParameters
+          if ($r) { $r | Format-Table -AutoSize | Out-String | Write-Host }
+          if ($r | Where-Object Severity -eq 'Error') {
+            Write-Host "::error::PSScriptAnalyzer reported errors"; exit 1
+          }
+          Write-Host "  no errors"
+
+  docs:
+    name: Documentation
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Internal links resolve
+        run: |
+          python3 - <<'PY'
+          import re, os, glob, sys
+          bad = []
+          for md in glob.glob('**/*.md', recursive=True):
+              base = os.path.dirname(md)
+              for m in re.finditer(r'\[([^\]]+)\]\(([^)#\s]+)(#[^)]*)?\)', open(md).read()):
+                  t = m.group(2)
+                  if t.startswith(('http://', 'https://', 'mailto:')):
+                      continue
+                  if not os.path.exists(os.path.normpath(os.path.join(base, t))):
+                      bad.append(f"  {md}: [{m.group(1)}] -> {t}")
+          if bad:
+              print("BROKEN LINKS:"); print("\n".join(bad)); sys.exit(1)
+          print("  all internal links resolve")
+          PY
+
+      - name: Required policy files are present
+        run: |
+          fail=0
+          for f in LICENSE NOTICE SECURITY.md DISCLAIMER.md CONTRIBUTING.md \
+                   CODE_OF_CONDUCT.md README.md .github/CODEOWNERS; do
+            if [ -f "$f" ]; then echo "  ok    $f"; else echo "  MISSING  $f"; fail=1; fi
+          done
+          exit $fail
+
+      - name: Every script carries an SPDX identifier
+        run: |
+          fail=0
+          for f in lab $(find scripts labs -name '*.sh') $(find windows -name '*.ps1'); do
+            if head -8 "$f" | grep -q 'SPDX-License-Identifier: Apache-2.0'; then
+              echo "  ok    $f"
+            else
+              echo "  MISSING SPDX  $f"; fail=1
+            fi
+          done
+          exit $fail
+
+  secrets:
+    name: Secret scan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Gitleaks
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # A published etcd snapshot or kubeconfig would leak every cluster
+      # credential, so fail loudly rather than relying on .gitignore alone.
+      - name: No credential files are tracked
+        run: |
+          fail=0
+          for pattern in 'lab.env' 'kubeconfig' '*.db' '*.key' '*.pem' \
+                         '*.kubeconfig' 'diagnostics/*' 'backups/*'; do
+            found=$(git ls-files "$pattern")
+            if [ -n "$found" ]; then
+              echo "::error::tracked credential-shaped file(s) matching $pattern:"
+              echo "$found"; fail=1
+            fi
+          done
+          [ $fail -eq 0 ] && echo "  no credential files tracked"
+          exit $fail

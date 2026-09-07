@@ -1,0 +1,64 @@
+# SPDX-License-Identifier: Apache-2.0
+#
+# Closes pull requests from anyone other than the repository owner.
+#
+# GitHub offers no setting to disable pull requests on a public repository, so
+# this workflow is how "PRs are blocked" is actually enforced. It comments with
+# an explanation and a pointer to forking, then closes.
+name: Close external pull requests
+
+on:
+  pull_request_target:
+    types: [opened, reopened]
+
+permissions:
+  pull-requests: write
+
+jobs:
+  close:
+    # Never fire on the owner's own PRs, or on automated dependency updates.
+    if: >-
+      github.event.pull_request.user.login != github.repository_owner &&
+      github.event.pull_request.user.login != 'dependabot[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Explain and close
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const owner = context.repo.owner;
+            const repo  = context.repo.repo;
+            const number = context.payload.pull_request.number;
+            const author = context.payload.pull_request.user.login;
+
+            await github.rest.issues.createComment({
+              owner, repo, issue_number: number,
+              body: [
+                `Hi @${author}, and thank you for taking the time to open this.`,
+                '',
+                'This repository does not accept pull requests. It is a personal',
+                'learning project published for others to use freely, not a',
+                'collaborative one, so it is closed to outside changes to keep its',
+                'scope manageable. This close is automated and is not a judgement',
+                'on your change.',
+                '',
+                '**Please fork it instead.** The [Apache License 2.0](../blob/main/LICENSE)',
+                'explicitly grants you the right to use, modify and redistribute this',
+                'work, including commercially, with no permission needed:',
+                '',
+                '```bash',
+                `gh repo fork ${owner}/${repo} --clone`,
+                '```',
+                '',
+                'If you found a **security problem**, please report it privately via',
+                `[security advisories](../../security/advisories/new) rather than here.`,
+                '',
+                'See [CONTRIBUTING.md](../blob/main/CONTRIBUTING.md) for the details.'
+              ].join('\n')
+            });
+
+            await github.rest.pulls.update({
+              owner, repo, pull_number: number, state: 'closed'
+            });
+
+            core.notice(`Closed PR #${number} from external contributor @${author}`);

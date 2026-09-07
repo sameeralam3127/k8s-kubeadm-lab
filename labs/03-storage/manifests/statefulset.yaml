@@ -1,0 +1,55 @@
+# Lab 03 Task 5 - a StatefulSet: stable names, stable DNS, per-pod storage.
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: web-stateful
+  namespace: lab03
+spec:
+  clusterIP: None            # headless: required by every StatefulSet, so each
+                             # pod gets its own DNS record
+  selector:
+    app: web-stateful
+  ports:
+    - port: 80
+      name: http
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: web-stateful
+  namespace: lab03
+spec:
+  serviceName: web-stateful  # must name the headless Service above
+  replicas: 2
+  selector:
+    matchLabels:
+      app: web-stateful
+  template:
+    metadata:
+      labels:
+        app: web-stateful
+    spec:
+      terminationGracePeriodSeconds: 10
+      containers:
+        - name: nginx
+          image: nginx:1.25-alpine
+          ports:
+            - containerPort: 80
+              name: http
+          volumeMounts:
+            - name: www
+              mountPath: /usr/share/nginx/html
+          resources:
+            requests: { cpu: 20m, memory: 32Mi }
+            limits:   { memory: 96Mi }
+  volumeClaimTemplates:
+    # One PVC is created PER POD from this template, named www-web-stateful-0,
+    # www-web-stateful-1, ... and it survives the pod being deleted.
+    - metadata:
+        name: www
+      spec:
+        accessModes: [ "ReadWriteOnce" ]
+        resources:
+          requests:
+            storage: 512Mi

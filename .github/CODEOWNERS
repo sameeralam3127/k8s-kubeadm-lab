@@ -1,0 +1,4 @@
+# Every file requires the repository owner's review.
+# Combined with a branch protection rule requiring code-owner review, this makes
+# it impossible for anyone else's change to reach main.
+*       @sameeralam3127

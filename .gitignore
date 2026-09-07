@@ -1,7 +1,57 @@
+# =============================================================================
+# Nothing below this line may ever reach a public repository.
+# These paths hold cluster credentials, cluster state, or your own network
+# topology. The lab tooling writes into every one of them.
+# =============================================================================
+
+# YOUR configuration: contains node IPs, usernames and SSH key paths.
 lab.env
+
+# Cluster admin credentials. admin.conf is cluster-admin - treat it as a root
+# password. `./lab kubeconfig` writes this.
+kubeconfig
+kubeconfig.*
+*.kubeconfig
+.kube/
+
+# etcd snapshots. A snapshot contains EVERY Secret in the cluster in
+# recoverable form. `./lab backup` writes here.
 backups/
 *.db
+*.db.sha256
+*.db.meta
+
+# Support bundles: kubelet journals, pod specs, cluster events, node config.
+# `./lab diagnostics` writes the bare `diagnostics/` directory - the earlier
+# glob missed it, which would have published cluster internals.
+diagnostics/
 diagnostics-*/
 diagnostics-*.tar.gz
-kubeconfig
+
+# SSH host keys accumulated by the tooling.
+.known_hosts
+known_hosts
+
+# Keys and certificates of any kind.
+*.pem
+*.key
+*.crt
+*.csr
+*.p12
+*.pfx
+id_rsa*
+id_ed25519*
+
+# Local overrides
+*.local
+.env
+.env.*
+!.env.example
+
+# OS and editor noise
 .DS_Store
+Thumbs.db
+*.swp
+*~
+.idea/
+.vscode/
