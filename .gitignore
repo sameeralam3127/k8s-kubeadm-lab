@@ -1,0 +1,7 @@
+lab.env
+backups/
+*.db
+diagnostics-*/
+diagnostics-*.tar.gz
+kubeconfig
+.DS_Store
